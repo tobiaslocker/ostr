@@ -53,15 +53,14 @@ inline PrintVector<T> print(std::vector<T> const &v) {
 
 template <typename T>
 inline auto print(T const &v) {
-  std::cout << __PRETTY_FUNCTION__ << "\n";
   return Print<T>(v);
 }
 
 
 template <typename T, typename ...Args>
 inline auto print(T const &v, Args&& ...args) {
-    return print(v) << print(args...);
-//  return Print<T>(args...);
+//    return Print<T>(v) << print(args...);
+    return  print(args...);
 }
 
 
