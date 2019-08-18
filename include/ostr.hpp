@@ -4,18 +4,25 @@
 #include <vector>
 
 template <typename T>
-class Manipulator {
+class StreamProxy {
   std::function<std::ostream &(std::ostream &, T)> m_func;
   T m_arg;
 
  public:
-  Manipulator(std::function<std::ostream &(std::ostream &, T)> f, T arg)
+  StreamProxy(std::function<std::ostream &(std::ostream &, T)> f, T arg)
       : m_func(f), m_arg(arg) {}
   inline void do_op(std::ostream &str) const { m_func(str, m_arg); }
 };
 
 template <typename T>
-class PrintVector : public Manipulator<std::vector<T> const &> {
+inline std::ostream &operator<<(std::ostream &os, StreamProxy<T> const &m) {
+  if (!os.good()) return os;
+  m.do_op(os);
+  return os;
+}
+
+template <typename T>
+class PrintVector : public StreamProxy<std::vector<T> const &> {
   inline static std::ostream &call(std::ostream &os, std::vector<T> const &v) {
     os << "{ ";
     std::copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, ", "));
@@ -24,18 +31,11 @@ class PrintVector : public Manipulator<std::vector<T> const &> {
 
  public:
   inline PrintVector(std::vector<T> const &v)
-      : Manipulator<std::vector<T> const &>(call, v) {}
+      : StreamProxy<std::vector<T> const &>(call, v) {}
 };
 
 template <typename T>
-inline std::ostream &operator<<(std::ostream &os, Manipulator<T> const &m) {
-  if (!os.good()) return os;
-  m.do_op(os);
-  return os;
-}
-
-template <typename T>
-class Print : public Manipulator<T const &> {
+class Print : public StreamProxy<T const &> {
   inline static std::ostream &call(std::ostream &os, T const &v) {
     os << v;
     return os;
@@ -43,7 +43,7 @@ class Print : public Manipulator<T const &> {
 
  public:
   inline Print(T const &v)
-      : Manipulator<T const &>(call, v) {}
+      : StreamProxy<T const &>(call, v) {}
 };
 
 template <class T>
