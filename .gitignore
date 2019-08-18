@@ -1,0 +1,6 @@
+main.cpp
+build
+*.user
+*.swp
+scripts/build.sh
+CMakeLists.txt
