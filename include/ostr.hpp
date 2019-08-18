@@ -3,20 +3,16 @@
 #include <iterator>
 #include <vector>
 
-template <class Argument>
+template <typename T>
 class manipulator {
-  typedef std::ostream& (*Function)(std::ostream&, Argument);
-
+  std::function<std::ostream&(std::ostream&, T)> m_func;
+  T m_arg;
  public:
-  manipulator(std::function<std::ostream&(std::ostream&, Argument)> f,
-              Argument _arg)
-      : func(f), arg(_arg) {}
+  manipulator(std::function<std::ostream&(std::ostream&, T)> f,
+              T arg)
+      : m_func(f), m_arg(arg) {}
 
-  void do_op(std::ostream& str) const { func(str, arg); }
-
- private:
-  std::function<std::ostream&(std::ostream&, Argument)> func;
-  Argument arg;
+  void do_op(std::ostream& str) const { m_func(str, m_arg); }
 };
 
 template <class T>
