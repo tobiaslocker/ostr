@@ -46,12 +46,26 @@ class Print : public StreamProxy<T const &> {
       : StreamProxy<T const &>(call, v) {}
 };
 
-template <class T>
+template <typename T>
 inline PrintVector<T> print(std::vector<T> const &v) {
   return PrintVector<T>(v);
 }
 
-template <class T>
-inline Print<T> print(T const &v) {
+template <typename T>
+inline auto print(T const &v) {
+  std::cout << __PRETTY_FUNCTION__ << "\n";
   return Print<T>(v);
 }
+
+
+template <typename T, typename ...Args>
+inline auto print(T const &v, Args&& ...args) {
+    return print(v) << print(args...);
+//  return Print<T>(args...);
+}
+
+
+
+
+
+
