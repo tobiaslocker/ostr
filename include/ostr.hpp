@@ -7,7 +7,9 @@ struct StreamProxy {
   template <typename... As>
   StreamProxy(As &&... as)
       : op{[&as...](std::ostream &os) -> std::ostream & {
-          ((os << std::forward<As>(as) << ", "), ...);
+          auto s = sizeof...(As);
+          int i = 1;
+          ((os << std::forward<As>(as) << (i++ < s ? ", " : "")), ...);
           return os;
         }} {}
 };
