@@ -12,8 +12,8 @@ struct StreamProxy {
         }} {}
 };
 
-std::ostream &operator<<(std::ostream &os, StreamProxy const &f) {
-  return os.good() ? f.op(os) : os;
+std::ostream &operator<<(std::ostream &os, StreamProxy const &str) {
+  return os.good() ? str.op(os) : os;
 }
 
 template <typename... As>
