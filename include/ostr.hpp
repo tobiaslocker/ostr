@@ -8,7 +8,7 @@ struct StreamProxy {
   StreamProxy(As &&... as)
       : op{[&as...](std::ostream &os) -> std::ostream & {
           auto s = sizeof...(As);
-          int i = 1;
+          unsigned int i = 1;
           ((os << std::forward<As>(as) << (i++ < s ? ", " : "")), ...);
           return os;
         }} {}
