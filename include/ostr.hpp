@@ -3,13 +3,12 @@
 
 struct StreamProxy {
   std::function<std::ostream &(std::ostream &)> op;
-
-  template <typename... As>
-  StreamProxy(As &&... as)
-      : op{[&as...](std::ostream &os) -> std::ostream & {
-          auto s = sizeof...(As);
+  template <typename... Args>
+  StreamProxy(Args &&... args)
+      : op{[&args...](std::ostream &os) -> std::ostream & {
+          auto s = sizeof...(Args);
           unsigned int i = 1;
-          ((os << std::forward<As>(as) << (i++ < s ? ", " : "")), ...);
+          ((os << std::forward<Args>(args) << (i++ < s ? ", " : "")), ...);
           return os;
         }} {}
 };
@@ -18,7 +17,7 @@ std::ostream &operator<<(std::ostream &os, StreamProxy const &str) {
   return os.good() ? str.op(os) : os;
 }
 
-template <typename... As>
-StreamProxy print(As &&... as) {
-  return {std::forward<As>(as)...};
+template <typename... Args>
+StreamProxy print(Args &&... args) {
+  return {std::forward<Args>(args)...};
 }
