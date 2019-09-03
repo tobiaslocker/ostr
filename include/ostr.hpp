@@ -1,7 +1,23 @@
 #include <any>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <vector>
+
+std::ostream &format_any(std::ostream &os, std::any const &value) {
+  if (auto s = std::any_cast<int>(&value)) {
+    os << *s;
+  } else if (auto s = std::any_cast<double>(&value)) {
+    os << *s;
+  } else if (auto s = std::any_cast<std::string>(&value)) {
+    os << std::quoted(*s);
+  } else if (auto s = std::any_cast<const char *>(&value)) {
+    os << std::quoted(*s);
+  } else if (auto s = std::any_cast<char>(&value)) {
+    os << '\'' << *s << '\'';
+  }
+  return os;
+}
 
 struct StreamProxy {
   std::function<std::ostream &(std::ostream &)> op;
@@ -9,10 +25,12 @@ struct StreamProxy {
   StreamProxy(Args &&... args)
       : op{[&args...](std::ostream &os) -> std::ostream & {
           std::vector<std::any> v = {args...};
-          std::for_each(v.begin(), v.end() - 1, [&](auto arg) {
-            os << arg.type().name() << ", ";
-          });
-          os << v.back().type().name();
+          if (!v.empty()) {
+            std::for_each(v.begin(), v.end() - 1, [&](auto const &arg) {
+              format_any(os, arg) << ", ";
+            });
+            format_any(os, v.back());
+          }
           return os;
         }} {}
 };
