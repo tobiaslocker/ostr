@@ -1,18 +1,18 @@
+#include <any>
 #include <functional>
 #include <iostream>
 #include <vector>
-#include <any>
 
 struct StreamProxy {
   std::function<std::ostream &(std::ostream &)> op;
   template <typename... Args>
   StreamProxy(Args &&... args)
       : op{[&args...](std::ostream &os) -> std::ostream & {
-      std::vector<std::any> v = {args...};
-      std::for_each(v.begin(), v.end() -1, [&](auto arg){
-          os << arg.type().name() << ", ";
-      });
-      os << v.back().type().name();
+          std::vector<std::any> v = {args...};
+          std::for_each(v.begin(), v.end() - 1, [&](auto arg) {
+            os << arg.type().name() << ", ";
+          });
+          os << v.back().type().name();
           return os;
         }} {}
 };
