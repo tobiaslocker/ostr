@@ -36,23 +36,6 @@ std::ostream &format_any(std::ostream &os, std::any const &value) {
   return os;
 }
 
-// template <typename T>
-// auto to_stream(std::ostream &os, T const &t) {
-//    os << t;
-//}
-
-// template <typename T, typename ...Args>
-// auto to_stream(std::ostream &os, T const &t, Args... args) {
-//    os << t;
-//    return  os << to_stream(args...);
-//}
-
-// template <typename Arg, typename... Args>
-// void to_stream(std::ostream& out, Arg&& arg, Args&&... args) {
-//    out << std::forward<Arg>(arg) << "Test";
-//    ((out << ',' << std::forward<Args>(args)), ...);
-//}
-
 template <typename T>
 void print_vector(std::ostream &out, std::vector<T> const &v) {
   if (!v.empty()) {
