@@ -53,13 +53,11 @@ std::ostream &format_any(std::ostream &os, std::any const &value) {
 //    ((out << ',' << std::forward<Args>(args)), ...);
 //}
 
-
 template <typename T>
-void print_vector (std::ostream &out, std::vector<T> const &v) {
+void print_vector(std::ostream &out, std::vector<T> const &v) {
   if (!v.empty()) {
-    std::for_each(v.begin(), v.end() - 1, [&](auto const &arg) {
-      out << arg << ", ";
-    });
+    std::for_each(
+        v.begin(), v.end() - 1, [&](auto const &arg) { out << arg << ", "; });
     out << v.back();
   }
 }
@@ -71,7 +69,7 @@ void to_stream(std::ostream &out, T t) {
 
 template <typename T>
 void to_stream(std::ostream &out, std::vector<T> v) {
-    print_vector(out, v);
+  print_vector(out, v);
 }
 
 template <typename T, typename U, typename... Args>
@@ -82,7 +80,7 @@ void to_stream(std::ostream &out, T t, U u, Args... args) {
 
 template <typename T, typename U, typename... Args>
 void to_stream(std::ostream &out, std::vector<T> v, U u, Args... args) {
-    print_vector(out, v);
+  print_vector(out, v);
   to_stream(out, u, args...);
 }
 
