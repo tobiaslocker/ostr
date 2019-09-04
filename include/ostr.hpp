@@ -38,11 +38,13 @@ std::ostream &format_any(std::ostream &os, std::any const &value) {
 
 template <typename T>
 void print_vector(std::ostream &out, std::vector<T> const &v) {
+  out << '[';
   if (!v.empty()) {
     std::for_each(
         v.begin(), v.end() - 1, [&](auto const &arg) { out << arg << ", "; });
     out << v.back();
   }
+  out << ']';
 }
 
 template <typename T>
@@ -57,7 +59,7 @@ void to_stream(std::ostream &out, std::vector<T> v) {
 
 template <typename T, typename U, typename... Args>
 void to_stream(std::ostream &out, T t, U u, Args... args) {
-  out << t << ',';
+  out << t << ", ";
   to_stream(out, u, args...);
 }
 
@@ -67,11 +69,24 @@ void to_stream(std::ostream &out, std::vector<T> v, U u, Args... args) {
   to_stream(out, u, args...);
 }
 
+template <typename U, typename... Args>
+void to_stream(std::ostream &out, std::string s, U u, Args... args) {
+  out << std::quoted(s) << ", ";
+  to_stream(out, u, args...);
+}
+
+template <typename U, typename... Args>
+void to_stream(std::ostream &out, const char *s, U u, Args... args) {
+  out << std::quoted(s) << ", ";
+  to_stream(out, u, args...);
+}
+
 struct StreamProxy {
   std::function<std::ostream &(std::ostream &)> op;
   template <typename... Args>
   StreamProxy(Args &&... args)
       : op{[&args...](std::ostream &os) -> std::ostream & {
+          std::cout << __PRETTY_FUNCTION__ << '\n';
           to_stream(os, args...);
           return os;
         }} {}
