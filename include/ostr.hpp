@@ -4,91 +4,59 @@
 #include <iostream>
 #include <vector>
 
-std::ostream &format_any(std::ostream &os, std::any const &value) {
-  if (auto s = std::any_cast<bool>(&value)) {
-    os << (*s ? "true" : "false");
-  } else if (auto s = std::any_cast<int>(&value)) {
-    os << *s;
-  } else if (auto s = std::any_cast<uint8_t>(&value)) {
-    os << (*s & 0xf);
-  } else if (auto s = std::any_cast<unsigned short>(&value)) {
-    os << *s;
-  } else if (auto s = std::any_cast<double>(&value)) {
-    os << *s;
-  } else if (auto s = std::any_cast<std::string>(&value)) {
-    os << std::quoted(*s);
-  } else if (auto s = std::any_cast<const char *>(&value)) {
-    os << std::quoted(*s);
-  } else if (auto s = std::any_cast<char>(&value)) {
-    os << '\'' << *s << '\'';
-  } else if (auto v = std::any_cast<std::vector<int>>(&value)) {
-    os << "[";
-    if (!v->empty()) {
-      std::for_each(v->begin(), v->end() - 1, [&](auto const &arg) {
-        format_any(os, arg) << ", ";
-      });
-      format_any(os, v->back());
-    }
-    os << "]";
-  } else {
-    os << value.type().name() << "Moep";
-  }
-  return os;
+template <typename T>
+void out(std::ostream &os, T const &t) {
+  os << t;
+}
+
+void out(std::ostream &os, const char *a) {
+  os << std::quoted(a);
+}
+
+void out(std::ostream &os, std::string const &s) {
+  os << std::quoted(s);
+}
+
+void out(std::ostream &os, bool b) {
+  os << (b ? "true" : "false");
+}
+
+void out(std::ostream &os, char c) {
+    os << '\'' << c << '\'';
 }
 
 template <typename T>
-void print_vector(std::ostream &out, std::vector<T> const &v) {
-  out << '[';
+void print_vector(std::ostream &os, std::vector<T> const &v) {
+  os << '[';
   if (!v.empty()) {
     std::for_each(
-        v.begin(), v.end() - 1, [&](auto const &arg) { out << arg << ", "; });
-    out << v.back();
+        v.begin(), v.end() - 1, [&](auto const &arg) { out(os, arg); os << ", "; });
+    out(os, v.back());
   }
-  out << ']';
+  os << ']';
 }
 
 template <typename T>
-void to_stream(std::ostream &out, T t) {
-  out << t;
+void to_stream(std::ostream &os, T t) {
+    out(os, t);
 }
 
 template <typename T>
-void to_stream(std::ostream &out, std::vector<T> v) {
-  print_vector(out, v);
+void to_stream(std::ostream &os, std::vector<T> v) {
+  print_vector(os, v);
 }
 
 template <typename T, typename U, typename... Args>
-void to_stream(std::ostream &out, T t, U u, Args... args) {
-          std::cout << __PRETTY_FUNCTION__ << '\n';
-  out << t << ", ";
-  to_stream(out, u, args...);
+void to_stream(std::ostream &os, T t, U u, Args... args) {
+    out(os, t);
+    os << ", ";
+  to_stream(os, u, args...);
 }
 
 template <typename T, typename U, typename... Args>
-void to_stream(std::ostream &out, std::vector<T> v, U u, Args... args) {
-  print_vector(out, v);
-  to_stream(out, u, args...);
-}
-
-template <typename U, typename... Args>
-void to_stream(std::ostream &out, std::string s, U u, Args... args) {
-//          std::cout << __PRETTY_FUNCTION__ << '\n';
-  out << std::quoted(s) << ", ";
-  to_stream(out, u, args...);
-}
-
-template <typename U, typename... Args>
-void to_stream(std::ostream &out, const char *s, U u, Args... args) {
-          std::cout << __PRETTY_FUNCTION__ << '\n';
-  out << std::quoted(s) << ", ";
-  to_stream(out, u, args...);
-}
-
-template <typename U, typename... Args>
-void to_stream(std::ostream &out, bool b, U u, Args... args) {
-          std::cout << __PRETTY_FUNCTION__ << '\n';
-  out << (b ? "true" : "false");
-  to_stream(out, u, args...);
+void to_stream(std::ostream &os, std::vector<T> v, U u, Args... args) {
+  print_vector(os, v);
+  to_stream(os, u, args...);
 }
 
 struct StreamProxy {
@@ -96,7 +64,6 @@ struct StreamProxy {
   template <typename... Args>
   StreamProxy(Args &&... args)
       : op{[&args...](std::ostream &os) -> std::ostream & {
-//          std::cout << __PRETTY_FUNCTION__ << '\n';
           to_stream(os, args...);
           return os;
         }} {}
