@@ -9,28 +9,22 @@ void out(std::ostream &os, T const &t) {
   os << t;
 }
 
-void out(std::ostream &os, const char *a) {
-  os << std::quoted(a);
-}
+void out(std::ostream &os, const char *a) { os << std::quoted(a); }
 
-void out(std::ostream &os, std::string const &s) {
-  os << std::quoted(s);
-}
+void out(std::ostream &os, std::string const &s) { os << std::quoted(s); }
 
-void out(std::ostream &os, bool b) {
-  os << (b ? "true" : "false");
-}
+void out(std::ostream &os, bool b) { os << (b ? "true" : "false"); }
 
-void out(std::ostream &os, char c) {
-    os << '\'' << c << '\'';
-}
+void out(std::ostream &os, char c) { os << '\'' << c << '\''; }
 
 template <typename T>
 void print_vector(std::ostream &os, std::vector<T> const &v) {
   os << '[';
   if (!v.empty()) {
-    std::for_each(
-        v.begin(), v.end() - 1, [&](auto const &arg) { out(os, arg); os << ", "; });
+    std::for_each(v.begin(), v.end() - 1, [&](auto const &arg) {
+      out(os, arg);
+      os << ", ";
+    });
     out(os, v.back());
   }
   os << ']';
@@ -38,7 +32,7 @@ void print_vector(std::ostream &os, std::vector<T> const &v) {
 
 template <typename T>
 void to_stream(std::ostream &os, T t) {
-    out(os, t);
+  out(os, t);
 }
 
 template <typename T>
@@ -48,8 +42,8 @@ void to_stream(std::ostream &os, std::vector<T> v) {
 
 template <typename T, typename U, typename... Args>
 void to_stream(std::ostream &os, T t, U u, Args... args) {
-    out(os, t);
-    os << ", ";
+  out(os, t);
+  os << ", ";
   to_stream(os, u, args...);
 }
 
