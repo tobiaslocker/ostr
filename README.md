@@ -11,8 +11,8 @@ Header only library for type dependent output
   std::vector<bool> vb{true, false, true};
   std::string s = "hello";
 
-  const char * foo = "foo";
-  std::cout << ostr::fmt(s, 42, foo, "foo",true, 'c', 2.0, v, vc, vb) << '\n';
+  const char *foo = "foo";
+  std::cout << ostr::fmt(s, 42, foo, "foo", true, 'c', 2.0, v, vc, vb) << '\n';
 ```
 
 Output:
